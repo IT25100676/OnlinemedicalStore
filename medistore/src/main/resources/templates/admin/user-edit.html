@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediStore - Edit User</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0ea5e9; --primary-dark: #0284c7; --primary-light: #e0f2fe;
+            --secondary: #10b981; --danger: #ef4444;
+            --bg: #f1f5f9; --surface: #ffffff; --text-primary: #0f172a;
+            --text-secondary: #64748b; --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-glow: 0 0 20px rgba(14,165,233,0.15);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); min-height: 100vh; }
+        .navbar {
+            background: var(--surface); border-bottom: 1px solid var(--border);
+            padding: 0 32px; height: 64px; display: flex; align-items: center;
+            justify-content: space-between; box-shadow: var(--shadow-sm);
+        }
+        .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .nav-logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: 9px; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; }
+        .nav-logo-text { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+        .nav-badge { background: linear-gradient(135deg,#7c3aed,#6d28d9); color: white; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 20px; margin-left: 4px; }
+        .nav-btn { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--bg); font-family: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary); }
+
+        .main { max-width: 720px; margin: 0 auto; padding: 32px 20px; }
+        .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; }
+        .breadcrumb a { color: var(--primary); text-decoration: none; }
+        .breadcrumb i { font-size: 10px; }
+
+        .card { background: var(--surface); border-radius: 18px; padding: 36px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .card-header { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+        .user-avatar-lg { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #38bdf8); display: flex; align-items: center; justify-content: center; color: white; font-size: 26px; font-weight: 700; flex-shrink: 0; }
+        .user-avatar-admin { background: linear-gradient(135deg, #7c3aed, #9333ea); }
+        .card-title { font-size: 20px; font-weight: 700; color: var(--text-primary); }
+        .card-subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 3px; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .form-group { margin-bottom: 0; }
+        .form-group.full { grid-column: 1 / -1; }
+        .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 7px; }
+        .input-wrapper { position: relative; }
+        .form-input {
+            width: 100%; padding: 11px 16px 11px 42px; border: 2px solid var(--border);
+            border-radius: 10px; font-size: 14px; font-family: inherit;
+            color: var(--text-primary); background: var(--bg); transition: all 0.3s ease;
+        }
+        .form-input:focus { outline: none; border-color: var(--primary); background: var(--surface); box-shadow: 0 0 0 4px var(--primary-light); }
+        .form-input[readonly] { opacity: 0.6; cursor: not-allowed; }
+        .input-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: 14px; }
+
+        .info-note { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-secondary); background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 20px; }
+
+        .form-actions { display: flex; gap: 12px; margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--border); }
+        .btn { padding: 11px 22px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; display: inline-flex; align-items: center; gap: 7px; transition: all 0.25s ease; text-decoration: none; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: var(--shadow-glow); }
+        .btn-secondary { background: var(--bg); color: var(--text-secondary); border: 1px solid var(--border); }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/admin/users" class="nav-logo">
+            <div class="nav-logo-icon"><i class="fas fa-capsules"></i></div>
+            <span class="nav-logo-text">MediStore</span>
+            <span class="nav-badge">ADMIN</span>
+        </a>
+        <a th:href="@{/admin/users}" class="nav-btn">
+            <i class="fas fa-arrow-left"></i> Back to Users
+        </a>
+    </nav>
+
+    <main class="main">
+        <div class="breadcrumb">
+            <a th:href="@{/admin/users}">Users</a>
+            <i class="fas fa-chevron-right"></i>
+            <span th:text="'Edit: ' + ${user.username}">Edit User</span>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="user-avatar-lg"
+                     th:classappend="${user.role == 'ADMIN'} ? 'user-avatar-admin' : ''"
+                     th:text="${#strings.substring(user.username, 0, 1).toUpperCase()}">J</div>
+                <div>
+                    <div class="card-title" th:text="'Edit: ' + ${user.username}">Edit User</div>
+                    <div class="card-subtitle" th:text="${user.role} + ' · ID: ' + ${user.id}">CUSTOMER · ID: ABC123</div>
+                </div>
+            </div>
+
+            <div class="info-note">
+                <i class="fas fa-info-circle" style="color:var(--primary);"></i>
+                Username cannot be changed. To reset password, use the password management section.
+            </div>
+
+            <form th:action="@{/admin/users/{id}/update(id=${user.id})}" method="post">
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <div class="input-wrapper">
+                            <input type="text" class="form-input" th:value="${user.username}" readonly>
+                            <i class="fas fa-user input-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Role</label>
+                        <div class="input-wrapper">
+                            <input type="text" class="form-input" th:value="${user.role}" readonly>
+                            <i class="fas fa-id-badge input-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group full">
+                        <label class="form-label">Email Address</label>
+                        <div class="input-wrapper">
+                            <input type="email" name="email" class="form-input" th:value="${user.email}" required>
+                            <i class="fas fa-envelope input-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <div class="input-wrapper">
+                            <input type="tel" name="phone" class="form-input" th:value="${user.phone}" required>
+                            <i class="fas fa-phone input-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Address</label>
+                        <div class="input-wrapper">
+                            <input type="text" name="address" class="form-input" th:value="${user.address}" required>
+                            <i class="fas fa-map-marker-alt input-icon"></i>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                    <a th:href="@{/admin/users}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
+</html>
