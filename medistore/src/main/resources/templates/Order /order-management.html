@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediStore - Order Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0ea5e9; --primary-dark: #0284c7; --primary-light: #e0f2fe;
+            --secondary: #10b981; --danger: #ef4444; --warning: #f59e0b; --purple: #7c3aed;
+            --bg: #f1f5f9; --surface: #ffffff; --text-primary: #0f172a;
+            --text-secondary: #64748b; --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 16px 0 rgb(0 0 0 / 0.08);
+            --shadow-glow: 0 0 20px rgba(14,165,233,0.15);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); min-height: 100vh; }
+
+        /* ── Navbar ─────────────────────────────────────── */
+        .navbar {
+            background: var(--surface); border-bottom: 1px solid var(--border);
+            padding: 0 32px; height: 64px; display: flex; align-items: center;
+            justify-content: space-between; box-shadow: var(--shadow-sm);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .nav-logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: 9px; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; }
+        .nav-logo-text { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+        .nav-badge { background: linear-gradient(135deg,#7c3aed,#6d28d9); color: white; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 20px; margin-left: 4px; }
+        .nav-right { display: flex; align-items: center; gap: 10px; }
+        .nav-btn { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--bg); font-family: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary); transition: all 0.2s; }
+        .nav-btn:hover { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+        .nav-btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border-color: transparent; }
+        .nav-btn-primary:hover { transform: translateY(-1px); box-shadow: var(--shadow-glow); color: white; }
+
+        /* ── Main layout ─────────────────────────────────── */
+        .main { max-width: 1200px; margin: 0 auto; padding: 32px 20px; }
+
+        /* ── Page Header ─────────────────────────────────── */
+        .page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 16px; }
+        .page-title { font-size: 26px; font-weight: 700; color: var(--text-primary); }
+        .page-subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+
+        /* ── Stat Cards ──────────────────────────────────── */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card {
+            background: var(--surface); border-radius: 14px; padding: 20px;
+            border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+            display: flex; align-items: center; gap: 14px; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .stat-icon { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .stat-icon.blue   { background: var(--primary-light);  color: var(--primary); }
+        .stat-icon.green  { background: #d1fae5; color: var(--secondary); }
+        .stat-icon.amber  { background: #fef3c7; color: var(--warning); }
+        .stat-icon.red    { background: #fee2e2; color: var(--danger); }
+        .stat-value { font-size: 22px; font-weight: 700; color: var(--text-primary); line-height: 1; }
+        .stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; font-weight: 500; }
+
+        /* ── Toolbar ─────────────────────────────────────── */
+        .toolbar { background: var(--surface); border-radius: 14px; padding: 16px 20px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+        .search-box { position: relative; flex: 1; min-width: 220px; }
+        .search-input { width: 100%; padding: 9px 16px 9px 38px; border: 2px solid var(--border); border-radius: 10px; font-size: 13px; font-family: inherit; color: var(--text-primary); background: var(--bg); transition: all 0.25s; }
+        .search-input:focus { outline: none; border-color: var(--primary); background: var(--surface); box-shadow: 0 0 0 4px var(--primary-light); }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: 13px; }
+        .filter-select { padding: 9px 14px; border: 2px solid var(--border); border-radius: 10px; font-size: 13px; font-family: inherit; color: var(--text-primary); background: var(--bg); cursor: pointer; transition: all 0.25s; }
+        .filter-select:focus { outline: none; border-color: var(--primary); }
+        .btn { padding: 9px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; display: inline-flex; align-items: center; gap: 6px; transition: all 0.25s ease; text-decoration: none; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: var(--shadow-glow); }
+        .btn-outline { background: var(--bg); color: var(--text-secondary); border: 1px solid var(--border); }
+        .btn-outline:hover { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+
+        /* ── Table Card ──────────────────────────────────── */
+        .table-card { background: var(--surface); border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); overflow: hidden; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead { background: var(--bg); border-bottom: 1px solid var(--border); }
+        thead th { padding: 13px 18px; text-align: left; font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+        tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: #f8fafc; }
+        tbody td { padding: 14px 18px; color: var(--text-primary); vertical-align: middle; }
+
+        .order-id { font-weight: 700; color: var(--primary); font-size: 13px; }
+        .order-id span { background: var(--primary-light); padding: 3px 8px; border-radius: 6px; }
+
+        .customer-info { display: flex; align-items: center; gap: 10px; }
+        .avatar-sm { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #38bdf8); display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+        .avatar-sm.g { background: linear-gradient(135deg, var(--secondary), #059669); }
+        .avatar-sm.p { background: linear-gradient(135deg, var(--purple), #9333ea); }
+        .avatar-sm.a { background: linear-gradient(135deg, var(--warning), #d97706); }
+        .customer-name { font-weight: 600; color: var(--text-primary); }
+        .customer-email { font-size: 11px; color: var(--text-secondary); }
+
+        /* ── Status badges ───────────────────────────────── */
+        .badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+        .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .badge-pending  { background: #fef3c7; color: #92400e; }
+        .badge-pending .badge-dot  { background: var(--warning); }
+        .badge-processing { background: #dbeafe; color: #1e40af; }
+        .badge-processing .badge-dot { background: #3b82f6; }
+        .badge-shipped  { background: #ede9fe; color: #5b21b6; }
+        .badge-shipped .badge-dot  { background: var(--purple); }
+        .badge-delivered{ background: #d1fae5; color: #065f46; }
+        .badge-delivered .badge-dot{ background: var(--secondary); }
+        .badge-cancelled{ background: #fee2e2; color: #991b1b; }
+        .badge-cancelled .badge-dot{ background: var(--danger); }
+
+        /* ── Payment badges ──────────────────────────────── */
+        .pay-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; }
+        .pay-paid    { background: #d1fae5; color: #065f46; }
+        .pay-pending { background: #fef3c7; color: #92400e; }
+        .pay-failed  { background: #fee2e2; color: #991b1b; }
+
+        .amount { font-weight: 700; color: var(--text-primary); }
+
+        /* ── Action buttons ──────────────────────────────── */
+        .action-btns { display: flex; gap: 6px; }
+        .action-btn { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; border: 1px solid var(--border); background: var(--bg); color: var(--text-secondary); transition: all 0.2s; text-decoration: none; }
+        .action-btn:hover { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+        .action-btn.danger:hover { background: #fee2e2; border-color: var(--danger); color: var(--danger); }
+        .action-btn.success:hover { background: #d1fae5; border-color: var(--secondary); color: var(--secondary); }
+
+        /* ── Pagination ──────────────────────────────────── */
+        .table-footer { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-secondary); flex-wrap: wrap; gap: 12px; }
+        .pagination { display: flex; gap: 4px; }
+        .page-btn { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); background: var(--bg); color: var(--text-secondary); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .page-btn:hover, .page-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* ── Responsive ──────────────────────────────────── */
+        @media (max-width: 900px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .page-header { flex-direction: column; }
+            .navbar { padding: 0 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <a href="/admin/dashboard" class="nav-logo">
+        <div class="nav-logo-icon"><i class="fas fa-capsules"></i></div>
+        <span class="nav-logo-text">MediStore</span>
+        <span class="nav-badge">ADMIN</span>
+    </a>
+    <div class="nav-right">
+        <a th:href="@{/admin/orders/export}" class="nav-btn">
+            <i class="fas fa-download"></i> Export
+        </a>
+        <a th:href="@{/admin/orders/create}" class="nav-btn nav-btn-primary">
+            <i class="fas fa-plus"></i> New Order
+        </a>
+    </div>
+</nav>
+
+<!-- Main -->
+<main class="main">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <div class="page-title">Order Management</div>
+            <div class="page-subtitle">Track, manage and update all customer orders</div>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon blue"><i class="fas fa-shopping-bag"></i></div>
+            <div>
+                <div class="stat-value" th:text="${totalOrders}">1,284</div>
+                <div class="stat-label">Total Orders</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon amber"><i class="fas fa-clock"></i></div>
+            <div>
+                <div class="stat-value" th:text="${pendingOrders}">38</div>
+                <div class="stat-label">Pending</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+            <div>
+                <div class="stat-value" th:text="${deliveredOrders}">1,102</div>
+                <div class="stat-label">Delivered</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon red"><i class="fas fa-times-circle"></i></div>
+            <div>
+                <div class="stat-value" th:text="${cancelledOrders}">144</div>
+                <div class="stat-label">Cancelled</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div class="search-box">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" placeholder="Search by order ID, customer, or product…">
+        </div>
+        <select class="filter-select">
+            <option value="">All Statuses</option>
+            <option value="PENDING">Pending</option>
+            <option value="PROCESSING">Processing</option>
+            <option value="SHIPPED">Shipped</option>
+            <option value="DELIVERED">Delivered</option>
+            <option value="CANCELLED">Cancelled</option>
+        </select>
+        <select class="filter-select">
+            <option value="">All Payments</option>
+            <option value="PAID">Paid</option>
+            <option value="PENDING">Pending</option>
+            <option value="FAILED">Failed</option>
+        </select>
+        <select class="filter-select">
+            <option value="">Last 30 days</option>
+            <option value="7">Last 7 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="all">All time</option>
+        </select>
+        <button class="btn btn-outline"><i class="fas fa-sliders-h"></i> More Filters</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-card">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Items</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Payment</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody th:each="order : ${orders}">
+
+                    <!-- Static demo rows (replace with th:each in production) -->
+                    <tr>
+                        <td><span class="order-id"><span>#ORD-00128</span></span></td>
+                        <td>
+                            <div class="customer-info">
+                                <div class="avatar-sm">J</div>
+                                <div>
+                                    <div class="customer-name">James Perera</div>
+                                    <div class="customer-email">james@email.com</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Panadol × 2, Ibuprofen × 1</td>
+                        <td><span class="amount">Rs. 1,450.00</span></td>
+                        <td><span class="badge badge-delivered"><span class="badge-dot"></span>Delivered</span></td>
+                        <td><span class="pay-badge pay-paid"><i class="fas fa-check-circle"></i> Paid</span></td>
+                        <td>Apr 27, 2026</td>
+                        <td>
+                            <div class="action-btns">
+                                <a href="#" class="action-btn" title="View"><i class="fas fa-eye"></i></a>
+                                <a href="#" class="action-btn success" title="Edit"><i class="fas fa-pen"></i></a>
+                                <a href="#" class="action-btn danger" title="Cancel"><i class="fas fa-ban"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td><span class="order-id"><span>#ORD-00127</span></span></td>
+                        <td>
+                            <div class="customer-info">
+                                <div class="avatar-sm g">S</div>
+                                <div>
+                                    <div class="customer-name">Sanduni Fernando</div>
+                                    <div class="customer-email">sanduni@email.com</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Vitamin C × 3</td>
+                        <td><span class="amount">Rs. 870.00</span></td>
+                        <td><span class="badge badge-shipped"><span class="badge-dot"></span>Shipped</span></td>
+                        <td><span class="pay-badge pay-paid"><i class="fas fa-check-circle"></i> Paid</span></td>
+                        <td>Apr 26, 2026</td>
+                        <td>
+                            <div class="action-btns">
+                                <a href="#" class="action-btn" title="View"><i class="fas fa-eye"></i></a>
+                                <a href="#" class="action-btn success" title="Edit"><i class="fas fa-pen"></i></a>
+                                <a href="#" class="action-btn danger" title="Cancel"><i class="fas fa-ban"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td><span class="order-id"><span>#ORD-00126</span></span></td>
+                        <td>
+                            <div class="customer-info">
+                                <div class="avatar-sm p">N</div>
+                                <div>
+                                    <div class="customer-name">Nuwan Silva</div>
+                                    <div class="customer-email">nuwan@email.com</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Amoxicillin × 1, Syrup × 2</td>
+                        <td><span class="amount">Rs. 2,100.00</span></td>
+                        <td><span class="badge badge-processing"><span class="badge-dot"></span>Processing</span></td>
+                        <td><span class="pay-badge pay-pending"><i class="fas fa-hourglass-half"></i> Pending</span></td>
+                        <td>Apr 26, 2026</td>
+                        <td>
+                            <div class="action-btns">
+                                <a href="#" class="action-btn" title="View"><i class="fas fa-eye"></i></a>
+                                <a href="#" class="action-btn success" title="Edit"><i class="fas fa-pen"></i></a>
+                                <a href="#" class="action-btn danger" title="Cancel"><i class="fas fa-ban"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td><span class="order-id"><span>#ORD-00125</span></span></td>
+                        <td>
+                            <div class="customer-info">
+                                <div class="avatar-sm a">A</div>
+                                <div>
+                                    <div class="customer-name">Ayesha Rizwan</div>
+                                    <div class="customer-email">ayesha@email.com</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Antacid × 4</td>
+                        <td><span class="amount">Rs. 640.00</span></td>
+                        <td><span class="badge badge-pending"><span class="badge-dot"></span>Pending</span></td>
+                        <td><span class="pay-badge pay-pending"><i class="fas fa-hourglass-half"></i> Pending</span></td>
+                        <td>Apr 25, 2026</td>
+                        <td>
+                            <div class="action-btns">
+                                <a href="#" class="action-btn" title="View"><i class="fas fa-eye"></i></a>
+                                <a href="#" class="action-btn success" title="Edit"><i class="fas fa-pen"></i></a>
+                                <a href="#" class="action-btn danger" title="Cancel"><i class="fas fa-ban"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td><span class="order-id"><span>#ORD-00124</span></span></td>
+                        <td>
+                            <div class="customer-info">
+                                <div class="avatar-sm">K</div>
+                                <div>
+                                    <div class="customer-name">Kasun Madushanka</div>
+                                    <div class="customer-email">kasun@email.com</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Bandage × 1, Antiseptic × 1</td>
+                        <td><span class="amount">Rs. 390.00</span></td>
+                        <td><span class="badge badge-cancelled"><span class="badge-dot"></span>Cancelled</span></td>
+                        <td><span class="pay-badge pay-failed"><i class="fas fa-times-circle"></i> Failed</span></td>
+                        <td>Apr 24, 2026</td>
+                        <td>
+                            <div class="action-btns">
+                                <a href="#" class="action-btn" title="View"><i class="fas fa-eye"></i></a>
+                                <a href="#" class="action-btn success" title="Edit"><i class="fas fa-pen"></i></a>
+                                <a href="#" class="action-btn danger" title="Cancel"><i class="fas fa-ban"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer / Pagination -->
+        <div class="table-footer">
+            <span>Showing <strong>1–5</strong> of <strong th:text="${totalOrders}">1,284</strong> orders</span>
+            <div class="pagination">
+                <div class="page-btn"><i class="fas fa-chevron-left" style="font-size:10px;"></i></div>
+                <div class="page-btn active">1</div>
+                <div class="page-btn">2</div>
+                <div class="page-btn">3</div>
+                <div class="page-btn">…</div>
+                <div class="page-btn">128</div>
+                <div class="page-btn"><i class="fas fa-chevron-right" style="font-size:10px;"></i></div>
+            </div>
+        </div>
+    </div>
+
+</main>
+</body>
+</html>
