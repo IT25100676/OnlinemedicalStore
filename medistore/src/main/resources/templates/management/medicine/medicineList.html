@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Inventory - MediStore</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0ea5e9; --primary-dark: #0284c7; --primary-light: #e0f2fe;
+            --danger: #ef4444; --success: #10b981;
+            --bg: #f8fafc; --surface: #ffffff; --text-primary: #0f172a;
+            --text-secondary: #475569; --border: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+            --shadow-glow: 0 10px 30px rgba(14, 165, 233, 0.15);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-primary); min-height: 100vh; }
+        .navbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 28px; height: 68px; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow-sm); }
+        .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-primary); }
+        .nav-logo-icon { width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; font-size: 16px; }
+        .nav-logo-text { font-size: 18px; font-weight: 700; }
+        .nav-btn { padding: 10px 18px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border); color: var(--text-secondary); text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
+        .main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+        .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; }
+        .breadcrumb a { color: var(--primary); text-decoration: none; }
+        .card { background: var(--surface); border-radius: 22px; padding: 30px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .card-header { display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px; }
+        .card-title { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; }
+        .card-subtitle { color: var(--text-secondary); margin-top: 8px; max-width: 640px; line-height: 1.6; }
+        .overview-grid { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: start; margin-bottom: 26px; }
+        .overview-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-end; }
+        .action-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-end; }
+        .btn { padding: 14px 24px; border-radius: 14px; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-size: 14px; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; }
+        .btn-secondary { background: var(--bg); color: var(--text-primary); border: 1px solid var(--border); }
+        .btn-outline { background: transparent; color: var(--primary); border: 1px solid var(--primary); }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 24px; }
+        .stat-card { background: #f8fbff; border-radius: 16px; padding: 18px; border: 1px solid #dbeafe; }
+        .stat-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; }
+        .stat-value { font-size: 22px; font-weight: 700; }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 920px; }
+        th, td { text-align: left; padding: 16px 14px; border-bottom: 1px solid var(--border); }
+        th { font-size: 13px; letter-spacing: 0.02em; text-transform: uppercase; color: var(--text-secondary); }
+        tr:hover { background: #f8fafc; }
+        td a { margin-right: 10px; color: var(--primary); text-decoration: none; font-weight: 600; }
+        .badge { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 700; }
+        .badge-expired { background: #fee2e2; color: #b91c1c; }
+        .badge-low { background: #fef9c3; color: #92400e; }
+        .badge-normal { background: #d1fae5; color: #065f46; }
+        .empty-state { padding: 24px; text-align: center; color: var(--text-secondary); }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/admin/medicine" class="nav-logo">
+            <div class="nav-logo-icon"><i class="fas fa-capsules"></i></div>
+            <span class="nav-logo-text">MediStore</span>
+        </a>
+        <a th:href="@{/dashboard}" class="nav-btn"><i class="fas fa-house"></i>Dashboard</a>
+    </nav>
+
+    <main class="main">
+        <div class="breadcrumb">
+            <a th:href="@{/dashboard}">Dashboard</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Medicine Inventory</span>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">Medicine Inventory</div>
+                    <div class="card-subtitle">Review stock levels, expired medicines and medicine details.</div>
+                </div>
+                <div class="overview-actions">
+                    <a th:href="@{/admin/medicine/add}" class="btn btn-primary"><i class="fas fa-plus"></i>Add Medicine</a>
+                    <a th:href="@{/admin/medicine/search}" class="btn btn-secondary"><i class="fas fa-search"></i>Search</a>
+                    <a th:href="@{/admin/medicine/expired}" class="btn btn-outline"><i class="fas fa-calendar-day"></i>Expired</a>
+                    <a th:href="@{/admin/medicine/low-stock}" class="btn btn-outline"><i class="fas fa-box-open"></i>Low Stock</a>
+                </div>
+            </div>
+
+            <div class="overview-grid">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Medicines</div>
+                        <div class="stat-value" th:text="${medicines.size()}">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Expired Medicines</div>
+                        <div class="stat-value" th:text="${expiredCount}">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Low Stock</div>
+                        <div class="stat-value" th:text="${lowStockCount}">0</div>
+                    </div>
+                </div>
+                <div class="overview-actions">
+                    <span class="stat-card" style="padding: 20px 24px; min-width: 220px; display: block;">
+                        <div class="stat-label" style="margin-bottom: 10px;">Active View</div>
+                        <div class="stat-value" th:text="${viewType != null ? viewType : 'All Records'}">All Records</div>
+                    </span>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Manufacturer</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Expiry</th>
+                                <th>Category</th>
+                                <th>Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="medicine : ${medicines}">
+                                <td th:text="${medicine.medicineId}"></td>
+                                <td th:text="${medicine.name}"></td>
+                                <td th:text="${medicine.manufacturer}"></td>
+                                <td th:text="${medicine.price}"></td>
+                                <td th:text="${medicine.stockQuantity}"></td>
+                                <td th:text="${medicine.expiryDate}"></td>
+                                <td th:text="${medicine.category}"></td>
+                                <td>
+                                    <span th:switch="${medicine.stockQuantity <= 5}">
+                                        <span th:case="true" class="badge badge-low" th:text="${medicine.medicineType}"></span>
+                                        <span th:case="false" class="badge badge-normal" th:text="${medicine.medicineType}"></span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/admin/medicine/update/{id}(id=${medicine.medicineId})}">Update</a>
+                                    <a th:href="@{/admin/medicine/delete/{id}(id=${medicine.medicineId})}" onclick="return confirm('Delete this medicine?')">Delete</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div th:if="${medicines.empty}" class="empty-state">No medicines found. Add a new medicine to begin managing inventory.</div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

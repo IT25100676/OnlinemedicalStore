@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Update Medicine - MediStore</title>
+</head>
+<body>
+    <h1>Update Medicine</h1>
+    <form th:action="@{/medicines/update}" method="post">
+        <input type="hidden" name="medicineId" th:value="${medicine.medicineId}">
+        <label>Name: <input type="text" name="name" th:value="${medicine.name}" required></label><br>
+        <label>Manufacturer: <input type="text" name="manufacturer" th:value="${medicine.manufacturer}" required></label><br>
+        <label>Price: <input type="number" step="0.01" name="price" th:value="${medicine.price}" required></label><br>
+        <label>Stock Quantity: <input type="number" name="stockQuantity" th:value="${medicine.stockQuantity}" required></label><br>
+        <label>Expiry Date: <input type="date" name="expiryDate" th:value="${medicine.expiryDate}" required></label><br>
+        <label>Category: 
+            <select name="category">
+                <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}" th:selected="${cat == medicine.category}"></option>
+            </select>
+        </label><br>
+        <label>Description: <textarea name="description" th:text="${medicine.description}" required></textarea></label><br>
+        <input type="hidden" name="medicineType" th:value="${medicine.medicineType}">
+        <p>Type: <span th:text="${medicine.medicineType}"></span></p>
+        <div th:if="${medicine.medicineType == 'TABLET'}">
+            <label>Mg per Tablet: <input type="number" name="mgPerTablet" th:value="${medicine.mgPerTablet}"></label><br>
+            <label>Tablets per Strip: <input type="number" name="tabletsPerStrip" th:value="${medicine.tabletsPerStrip}"></label><br>
+        </div>
+        <div th:if="${medicine.medicineType == 'SYRUP'}">
+            <label>Volume (ml): <input type="number" name="volumeMl" th:value="${medicine.volumeMl}"></label><br>
+            <label>Flavor: <input type="text" name="flavor" th:value="${medicine.flavor}"></label><br>
+        </div>
+        <div th:if="${medicine.medicineType == 'INJECTION'}">
+            <label>Dosage (mg): <input type="number" name="dosageMg" th:value="${medicine.dosageMg}"></label><br>
+            <label>Requires Prescription: <input type="checkbox" name="requiresPrescription" th:checked="${medicine.requiresPrescription}"></label><br>
+        </div>
+        <button type="submit">Update Medicine</button>
+    </form>
+    <div th:if="${error}" style="color: red;" th:text="${error}"></div>
+    <div th:if="${success}" style="color: green;" th:text="${success}"></div>
+    <a th:href="@{/medicines}">Back to List</a>
+</body>
+</html>

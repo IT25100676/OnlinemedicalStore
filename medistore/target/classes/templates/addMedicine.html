@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Medicine - MediStore</title>
+</head>
+<body>
+    <h1>Add Medicine</h1>
+    <form th:action="@{/medicines/add}" method="post">
+        <label>Medicine ID: <input type="text" name="medicineId" required></label><br>
+        <label>Name: <input type="text" name="name" required></label><br>
+        <label>Manufacturer: <input type="text" name="manufacturer" required></label><br>
+        <label>Price: <input type="number" step="0.01" name="price" required></label><br>
+        <label>Stock Quantity: <input type="number" name="stockQuantity" required></label><br>
+        <label>Expiry Date: <input type="date" name="expiryDate" required></label><br>
+        <label>Category: 
+            <select name="category">
+                <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
+            </select>
+        </label><br>
+        <label>Description: <textarea name="description" required></textarea></label><br>
+        <label>Medicine Type: 
+            <select name="medicineType" id="medicineType">
+                <option value="TABLET">Tablet</option>
+                <option value="SYRUP">Syrup</option>
+                <option value="INJECTION">Injection</option>
+            </select>
+        </label><br>
+        <div id="tabletFields" style="display:none;">
+            <label>Mg per Tablet: <input type="number" name="mgPerTablet"></label><br>
+            <label>Tablets per Strip: <input type="number" name="tabletsPerStrip"></label><br>
+        </div>
+        <div id="syrupFields" style="display:none;">
+            <label>Volume (ml): <input type="number" name="volumeMl"></label><br>
+            <label>Flavor: <input type="text" name="flavor"></label><br>
+        </div>
+        <div id="injectionFields" style="display:none;">
+            <label>Dosage (mg): <input type="number" name="dosageMg"></label><br>
+            <label>Requires Prescription: <input type="checkbox" name="requiresPrescription"></label><br>
+        </div>
+        <button type="submit">Add Medicine</button>
+    </form>
+    <div th:if="${error}" style="color: red;" th:text="${error}"></div>
+    <div th:if="${success}" style="color: green;" th:text="${success}"></div>
+    <a th:href="@{/medicines}">Back to List</a>
+    <script>
+        document.getElementById('medicineType').addEventListener('change', function() {
+            document.getElementById('tabletFields').style.display = this.value === 'TABLET' ? 'block' : 'none';
+            document.getElementById('syrupFields').style.display = this.value === 'SYRUP' ? 'block' : 'none';
+            document.getElementById('injectionFields').style.display = this.value === 'INJECTION' ? 'block' : 'none';
+        });
+    </script>
+</body>
+</html>
