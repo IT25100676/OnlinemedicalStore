@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediStore - Order Management</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- App Stylesheet -->
+    <link rel="stylesheet" th:href="@{/css/orders.css}" href="../css/orders.css">
+</head>
+<body>
+
+<!-- ── Navbar ──────────────────────────────────────── -->
+<nav class="navbar">
+    <a href="/admin/dashboard" class="nav-logo">
+        <div class="nav-logo-icon"><i class="fas fa-capsules"></i></div>
+        <span class="nav-logo-text">MediStore</span>
+        <span class="nav-badge">ADMIN</span>
+    </a>
+    <div class="nav-right">
+        <a th:href="@{/admin/orders/export}" href="#" class="nav-btn">
+            <i class="fas fa-download"></i> Export
+        </a>
+        <a th:href="@{/admin/orders/create}" href="#" class="nav-btn nav-btn-primary">
+            <i class="fas fa-plus"></i> New Order
+        </a>
+    </div>
+</nav>
+
+<!-- ── Main ────────────────────────────────────────── -->
+<main class="main">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <div class="page-title">Order Management</div>
+            <div class="page-subtitle">Track, manage and update all customer orders</div>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon blue"><i class="fas fa-shopping-bag"></i></div>
+            <div>
+                <div class="stat-value" th:text="${totalOrders}">1,284</div>
+                <div class="stat-label">Total Orders</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon amber"><i class="fas fa-clock"></i></div>
+            <div>
+                <div class="stat-value" th:text="${pendingOrders}">38</div>
+                <div class="stat-label">Pending</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+            <div>
+                <div class="stat-value" th:text="${deliveredOrders}">1,102</div>
+                <div class="stat-label">Delivered</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon red"><i class="fas fa-times-circle"></i></div>
+            <div>
+                <div class="stat-value" th:text="${cancelledOrders}">144</div>
+                <div class="stat-label">Cancelled</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div class="search-box">
+            <i class="fas fa-search search-icon"></i>
+            <input
+                    type="text"
+                    id="searchInput"
+                    class="search-input"
+                    placeholder="Search by order ID, customer, or product…"
+            >
+        </div>
+        <select id="statusFilter" class="filter-select">
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="processing">Processing</option>
+            <option value="shipped">Shipped</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+        </select>
+        <select id="paymentFilter" class="filter-select">
+            <option value="">All Payments</option>
+            <option value="paid">Paid</option>
+            <option value="pending">Pending</option>
+            <option value="failed">Failed</option>
+        </select>
+        <select id="dateFilter" class="filter-select">
+            <option value="">Last 30 days</option>
+            <option value="7">Last 7 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="all">All time</option>
+        </select>
+        <button class="btn btn-outline"><i class="fas fa-sliders-h"></i> More Filters</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-card">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Items</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Payment</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+
+                <!--
+                    In Thymeleaf production, replace static rows with:
+                    <tr th:each="order : ${orders}"
+                        data-row
+                        th:data-status="${#strings.toLowerCase(order.status)}"
+                        th:data-payment="${#strings.toLowerCase(order.paymentStatus)}">
+                      ...
+                    </tr>
+                -->
+
+                <tr data-row data-status="delivered" data-payment="paid">
+                    <td><span class="order-id"><span>#ORD-00128</span></span></td>
+                    <td>
+                        <div class="customer-info">
+                            <div class="avatar-sm">J</div>
+                            <div>
+                                <div class="customer-name">James Perera</div>
+                                <div class="customer-email">james@email.com</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>Panadol × 2, Ibuprofen × 1</td>
+                    <td><span class="amount">Rs. 1,450.00</span></td>
+                    <td><span class="badge badge-delivered"><span class="badge-dot"></span>Delivered</span></td>
+                    <td><span class="pay-badge pay-paid"><i class="fas fa-check-circle"></i> Paid</span></td>
+                    <td>Apr 27, 2026</td>
+                    <td>
+                        <div class="action-btns">
+                            <a href="#" class="action-btn" data-action="view"   title="View"><i class="fas fa-eye"></i></a>
+                            <a href="#" class="action-btn success" data-action="edit"   title="Edit"><i class="fas fa-pen"></i></a>
+                            <a href="#" class="action-btn danger"  data-action="cancel" title="Cancel"><i class="fas fa-ban"></i></a>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr data-row data-status="shipped" data-payment="paid">
+                    <td><span class="order-id"><span>#ORD-00127</span></span></td>
+                    <td>
+                        <div class="customer-info">
+                            <div class="avatar-sm g">S</div>
+                            <div>
+                                <div class="customer-name">Sanduni Fernando</div>
+                                <div class="customer-email">sanduni@email.com</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>Vitamin C × 3</td>
+                    <td><span class="amount">Rs. 870.00</span></td>
+                    <td><span class="badge badge-shipped"><span class="badge-dot"></span>Shipped</span></td>
+                    <td><span class="pay-badge pay-paid"><i class="fas fa-check-circle"></i> Paid</span></td>
+                    <td>Apr 26, 2026</td>
+                    <td>
+                        <div class="action-btns">
+                            <a href="#" class="action-btn" data-action="view"   title="View"><i class="fas fa-eye"></i></a>
+                            <a href="#" class="action-btn success" data-action="edit"   title="Edit"><i class="fas fa-pen"></i></a>
+                            <a href="#" class="action-btn danger"  data-action="cancel" title="Cancel"><i class="fas fa-ban"></i></a>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr data-row data-status="processing" data-payment="pending">
+                    <td><span class="order-id"><span>#ORD-00126</span></span></td>
+                    <td>
+                        <div class="customer-info">
+                            <div class="avatar-sm p">N</div>
+                            <div>
+                                <div class="customer-name">Nuwan Silva</div>
+                                <div class="customer-email">nuwan@email.com</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>Amoxicillin × 1, Syrup × 2</td>
+                    <td><span class="amount">Rs. 2,100.00</span></td>
+                    <td><span class="badge badge-processing"><span class="badge-dot"></span>Processing</span></td>
+                    <td><span class="pay-badge pay-pending"><i class="fas fa-hourglass-half"></i> Pending</span></td>
+                    <td>Apr 26, 2026</td>
+                    <td>
+                        <div class="action-btns">
+                            <a href="#" class="action-btn" data-action="view"   title="View"><i class="fas fa-eye"></i></a>
+                            <a href="#" class="action-btn success" data-action="edit"   title="Edit"><i class="fas fa-pen"></i></a>
+                            <a href="#" class="action-btn danger"  data-action="cancel" title="Cancel"><i class="fas fa-ban"></i></a>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr data-row data-status="pending" data-payment="pending">
+                    <td><span class="order-id"><span>#ORD-00125</span></span></td>
+                    <td>
+                        <div class="customer-info">
+                            <div class="avatar-sm a">A</div>
+                            <div>
+                                <div class="customer-name">Ayesha Rizwan</div>
+                                <div class="customer-email">ayesha@email.com</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>Antacid × 4</td>
+                    <td><span class="amount">Rs. 640.00</span></td>
+                    <td><span class="badge badge-pending"><span class="badge-dot"></span>Pending</span></td>
+                    <td><span class="pay-badge pay-pending"><i class="fas fa-hourglass-half"></i> Pending</span></td>
+                    <td>Apr 25, 2026</td>
+                    <td>
+                        <div class="action-btns">
+                            <a href="#" class="action-btn" data-action="view"   title="View"><i class="fas fa-eye"></i></a>
+                            <a href="#" class="action-btn success" data-action="edit"   title="Edit"><i class="fas fa-pen"></i></a>
+                            <a href="#" class="action-btn danger"  data-action="cancel" title="Cancel"><i class="fas fa-ban"></i></a>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr data-row data-status="cancelled" data-payment="failed">
+                    <td><span class="order-id"><span>#ORD-00124</span></span></td>
+                    <td>
+                        <div class="customer-info">
+                            <div class="avatar-sm">K</div>
+                            <div>
+                                <div class="customer-name">Kasun Madushanka</div>
+                                <div class="customer-email">kasun@email.com</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>Bandage × 1, Antiseptic × 1</td>
+                    <td><span class="amount">Rs. 390.00</span></td>
+                    <td><span class="badge badge-cancelled"><span class="badge-dot"></span>Cancelled</span></td>
+                    <td><span class="pay-badge pay-failed"><i class="fas fa-times-circle"></i> Failed</span></td>
+                    <td>Apr 24, 2026</td>
+                    <td>
+                        <div class="action-btns">
+                            <a href="#" class="action-btn" data-action="view"   title="View"><i class="fas fa-eye"></i></a>
+                            <a href="#" class="action-btn success" data-action="edit"   title="Edit"><i class="fas fa-pen"></i></a>
+                            <a href="#" class="action-btn danger"  data-action="cancel" title="Cancel"><i class="fas fa-ban"></i></a>
+                        </div>
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer / Pagination -->
+        <div class="table-footer">
+            <span id="showingInfo">Showing <strong>1–5</strong> of <strong th:text="${totalOrders}">1,284</strong> orders</span>
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </div>
+
+</main>
+
+<!-- App Script -->
+<script th:src="@{/js/orders.js}" src="../js/orders.js"></script>
+
+</body>
+</html>
