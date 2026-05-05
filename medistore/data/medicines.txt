@@ -1,1 +1,8 @@
-fsdf|fsdf|fsdf|100.0|50|2026-05-14|Antibiotics|asdasd|TABLET|500|10
+MED-3714|I|Sri Lanka|8490.0|558|2026-05-01|General|18+|TABLET|4|87
+MED-3715|Paracetamol|GlaxoSmithKline|25.0|200|2027-01-15|Pain Relief|Safe for all ages|TABLET|500|12
+MED-3717|Cetirizine|Sun Pharma|15.0|300|2027-03-10|Allergy|Once daily|TABLET|10|56
+MED-3718|Ibuprofen|Pfizer|30.0|180|2026-12-05|Pain Relief|After meals|TABLET|400|78
+MED-3719|Metformin|Ranbaxy|45.0|220|2027-02-18|Diabetes|Before meals|TABLET|500|91
+MED-3721|Azithromycin|Abbott|250.0|90|2026-09-25|Antibiotic|3-day course|TABLET|500|45
+MED-3723|Calcium Carbonate|Bayer|35.0|210|2027-05-01|Supplements|After meals|TABLET|600|88
+MED-3710|E|USA|784.0|7|2026-05-14|Antibiotics|18+|TABLET|879|74
