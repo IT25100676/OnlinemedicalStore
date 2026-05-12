@@ -146,6 +146,11 @@ public class FileMedicineService implements MedicineService {
 
         switch (type) {
             case "TABLET":
+                if (parts.length < 11){
+                    System.err.println("Skipping invalid Tablet: " + line);
+                    return null;
+                }
+
                 int mgPerTablet = Integer.parseInt(parts[9]);
                 int tabletsPerStrip = Integer.parseInt(parts[10]);
                 return new Tablet(medicineId, name, manufacturer, price,
@@ -153,6 +158,10 @@ public class FileMedicineService implements MedicineService {
                         mgPerTablet, tabletsPerStrip);
 
             case "SYRUP":
+                if (parts.length < 11) {
+                    System.err.println("Skipping invalid Syrup: " + line);
+                    return null;
+                }
                 int volumeMl = Integer.parseInt(parts[9]);
                 String flavor = parts[10];
                 return new Syrup(medicineId, name, manufacturer, price,
@@ -160,6 +169,10 @@ public class FileMedicineService implements MedicineService {
                         volumeMl, flavor);
 
             case "INJECTION":
+                if (parts.length < 11) {
+                    System.err.println("Skipping invalid Injection: " + line);
+                    return null;
+                }
                 int dosageMg = Integer.parseInt(parts[9]);
                 boolean requiresPrescription = Boolean.parseBoolean(parts[10]);
                 return new Injection(medicineId, name, manufacturer, price,

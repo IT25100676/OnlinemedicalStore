@@ -43,106 +43,106 @@
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <a href="/admin/medicine" class="nav-logo">
-            <div class="nav-logo-icon"><i class="fas fa-capsules"></i></div>
-            <span class="nav-logo-text">MediStore</span>
-        </a>
-        <a th:href="@{/admin/medicine}" class="nav-btn"><i class="fas fa-arrow-left"></i>Back to Inventory</a>
-    </nav>
+<nav class="navbar">
+    <a href="/admin/medicine" class="nav-logo">
+        <div class="nav-logo-icon"><i class="fas fa-capsules"></i></div>
+        <span class="nav-logo-text">MediStore</span>
+    </a>
+    <a th:href="@{/admin/medicine}" class="nav-btn"><i class="fas fa-arrow-left"></i>Back to Inventory</a>
+</nav>
 
-    <main class="main">
-        <div class="breadcrumb">
-            <a th:href="@{/admin/medicine}">Medicine Inventory</a>
-            <i class="fas fa-chevron-right"></i>
-            <span>Update Medicine</span>
+<main class="main">
+    <div class="breadcrumb">
+        <a th:href="@{/admin/medicine}">Medicine Inventory</a>
+        <i class="fas fa-chevron-right"></i>
+        <span>Update Medicine</span>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <div class="card-title">Update Medicine</div>
+                <div class="card-subtitle">Edit the selected medicine details and stock information.</div>
+            </div>
         </div>
 
-        <div class="card">
-            <div class="card-header">
-                <div>
-                    <div class="card-title">Update Medicine</div>
-                    <div class="card-subtitle">Edit the selected medicine details and stock information.</div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <form th:action="@{/admin/medicine/update}" method="post">
+            <input type="hidden" name="medicineId" th:value="${medicine.medicineId}">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" name="name" class="form-input" th:value="${medicine.name}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Manufacturer</label>
+                    <input type="text" name="manufacturer" class="form-input" th:value="${medicine.manufacturer}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Price</label>
+                    <input type="number" step="0.01" name="price" class="form-input" th:value="${medicine.price}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Stock Quantity</label>
+                    <input type="number" name="stockQuantity" class="form-input" th:value="${medicine.stockQuantity}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Expiry Date</label>
+                    <input type="date" name="expiryDate" class="form-input" th:value="${medicine.expiryDate}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select name="category" class="form-select" required>
+                        <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}" th:selected="${cat == medicine.category}"></option>
+                    </select>
+                </div>
+                <div class="form-group full">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" class="form-textarea" required th:text="${medicine.description}"></textarea>
                 </div>
             </div>
 
-            <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
-            <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-
-            <form th:action="@{/admin/medicine/update}" method="post">
-                <input type="hidden" name="medicineId" th:value="${medicine.medicineId}">
+            <div class="type-panel">
+                <div class="form-group full">
+                    <label class="form-label">Medicine Type</label>
+                    <input type="text" class="form-input" th:value="${medicine.medicineType}" readonly>
+                </div>
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">Name</label>
-                        <input type="text" name="name" class="form-input" th:value="${medicine.name}" required>
+                    <div th:if="${medicine.medicineType == 'TABLET'}" class="form-group">
+                        <label class="form-label">Mg per Tablet</label>
+                        <input type="number" name="mgPerTablet" class="form-input" th:value="${medicine.mgPerTablet}">
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Manufacturer</label>
-                        <input type="text" name="manufacturer" class="form-input" th:value="${medicine.manufacturer}" required>
+                    <div th:if="${medicine.medicineType == 'TABLET'}" class="form-group">
+                        <label class="form-label">Tablets per Strip</label>
+                        <input type="number" name="tabletsPerStrip" class="form-input" th:value="${medicine.tabletsPerStrip}">
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Price</label>
-                        <input type="number" step="0.01" name="price" class="form-input" th:value="${medicine.price}" required>
+                    <div th:if="${medicine.medicineType == 'SYRUP'}" class="form-group">
+                        <label class="form-label">Volume (ml)</label>
+                        <input type="number" name="volumeMl" class="form-input" th:value="${medicine.volumeMl}">
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Stock Quantity</label>
-                        <input type="number" name="stockQuantity" class="form-input" th:value="${medicine.stockQuantity}" required>
+                    <div th:if="${medicine.medicineType == 'SYRUP'}" class="form-group">
+                        <label class="form-label">Flavor</label>
+                        <input type="text" name="flavor" class="form-input" th:value="${medicine.flavor}">
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Expiry Date</label>
-                        <input type="date" name="expiryDate" class="form-input" th:value="${medicine.expiryDate}" required>
+                    <div th:if="${medicine.medicineType == 'INJECTION'}" class="form-group">
+                        <label class="form-label">Dosage (mg)</label>
+                        <input type="number" name="dosageMg" class="form-input" th:value="${medicine.dosageMg}">
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Category</label>
-                        <select name="category" class="form-select" required>
-                            <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}" th:selected="${cat == medicine.category}"></option>
-                        </select>
-                    </div>
-                    <div class="form-group full">
-                        <label class="form-label">Description</label>
-                        <textarea name="description" class="form-textarea" required th:text="${medicine.description}"></textarea>
+                    <div th:if="${medicine.medicineType == 'INJECTION'}" class="form-group" style="align-items: flex-end;">
+                        <label class="form-label">Requires Prescription</label>
+                        <input type="checkbox" name="requiresPrescription" th:checked="${medicine.requiresPrescription}" style="width: auto; margin-top: 6px;">
                     </div>
                 </div>
+            </div>
 
-                <div class="type-panel">
-                    <div class="form-group full">
-                        <label class="form-label">Medicine Type</label>
-                        <input type="text" class="form-input" th:value="${medicine.medicineType}" readonly>
-                    </div>
-                    <div class="form-grid">
-                        <div th:if="${medicine.medicineType == 'TABLET'}" class="form-group">
-                            <label class="form-label">Mg per Tablet</label>
-                            <input type="number" name="mgPerTablet" class="form-input" th:value="${medicine.mgPerTablet}">
-                        </div>
-                        <div th:if="${medicine.medicineType == 'TABLET'}" class="form-group">
-                            <label class="form-label">Tablets per Strip</label>
-                            <input type="number" name="tabletsPerStrip" class="form-input" th:value="${medicine.tabletsPerStrip}">
-                        </div>
-                        <div th:if="${medicine.medicineType == 'SYRUP'}" class="form-group">
-                            <label class="form-label">Volume (ml)</label>
-                            <input type="number" name="volumeMl" class="form-input" th:value="${medicine.volumeMl}">
-                        </div>
-                        <div th:if="${medicine.medicineType == 'SYRUP'}" class="form-group">
-                            <label class="form-label">Flavor</label>
-                            <input type="text" name="flavor" class="form-input" th:value="${medicine.flavor}">
-                        </div>
-                        <div th:if="${medicine.medicineType == 'INJECTION'}" class="form-group">
-                            <label class="form-label">Dosage (mg)</label>
-                            <input type="number" name="dosageMg" class="form-input" th:value="${medicine.dosageMg}">
-                        </div>
-                        <div th:if="${medicine.medicineType == 'INJECTION'}" class="form-group" style="align-items: flex-end;">
-                            <label class="form-label">Requires Prescription</label>
-                            <input type="checkbox" name="requiresPrescription" th:checked="${medicine.requiresPrescription}" style="width: auto; margin-top: 6px;">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i>Update Medicine</button>
-                    <a th:href="@{/admin/medicine}" class="btn btn-secondary"><i class="fas fa-times"></i>Cancel</a>
-                </div>
-            </form>
-        </div>
-    </main>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i>Update Medicine</button>
+                <a th:href="@{/admin/medicine}" class="btn btn-secondary"><i class="fas fa-times"></i>Cancel</a>
+            </div>
+        </form>
+    </div>
+</main>
 </body>
 </html>

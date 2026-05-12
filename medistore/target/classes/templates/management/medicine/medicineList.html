@@ -54,99 +54,99 @@
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <a href="/admin/medicine" class="nav-logo">
-            <div class="nav-logo-icon"><i class="fas fa-capsules"></i></div>
-            <span class="nav-logo-text">MediStore</span>
-        </a>
-        <a th:href="@{/dashboard}" class="nav-btn"><i class="fas fa-house"></i>Dashboard</a>
-    </nav>
+<nav class="navbar">
+    <a href="/admin/medicine" class="nav-logo">
+        <div class="nav-logo-icon"><i class="fas fa-capsules"></i></div>
+        <span class="nav-logo-text">MediStore</span>
+    </a>
+    <a th:href="@{/dashboard}" class="nav-btn"><i class="fas fa-house"></i>Dashboard</a>
+</nav>
 
-    <main class="main">
-        <div class="breadcrumb">
-            <a th:href="@{/dashboard}">Dashboard</a>
-            <i class="fas fa-chevron-right"></i>
-            <span>Medicine Inventory</span>
+<main class="main">
+    <div class="breadcrumb">
+        <a th:href="@{/dashboard}">Dashboard</a>
+        <i class="fas fa-chevron-right"></i>
+        <span>Medicine Inventory</span>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <div class="card-title">Medicine Inventory</div>
+                <div class="card-subtitle">Review stock levels, expired medicines and medicine details.</div>
+            </div>
+            <div class="overview-actions">
+                <a th:href="@{/admin/medicine/add}" class="btn btn-primary"><i class="fas fa-plus"></i>Add Medicine</a>
+                <a th:href="@{/admin/medicine/search}" class="btn btn-secondary"><i class="fas fa-search"></i>Search</a>
+                <a th:href="@{/admin/medicine/expired}" class="btn btn-outline"><i class="fas fa-calendar-day"></i>Expired</a>
+                <a th:href="@{/admin/medicine/low-stock}" class="btn btn-outline"><i class="fas fa-box-open"></i>Low Stock</a>
+            </div>
         </div>
 
-        <div class="card">
-            <div class="card-header">
-                <div>
-                    <div class="card-title">Medicine Inventory</div>
-                    <div class="card-subtitle">Review stock levels, expired medicines and medicine details.</div>
+        <div class="overview-grid">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Medicines</div>
+                    <div class="stat-value" th:text="${medicines.size()}">0</div>
                 </div>
-                <div class="overview-actions">
-                    <a th:href="@{/admin/medicine/add}" class="btn btn-primary"><i class="fas fa-plus"></i>Add Medicine</a>
-                    <a th:href="@{/admin/medicine/search}" class="btn btn-secondary"><i class="fas fa-search"></i>Search</a>
-                    <a th:href="@{/admin/medicine/expired}" class="btn btn-outline"><i class="fas fa-calendar-day"></i>Expired</a>
-                    <a th:href="@{/admin/medicine/low-stock}" class="btn btn-outline"><i class="fas fa-box-open"></i>Low Stock</a>
+                <div class="stat-card">
+                    <div class="stat-label">Expired Medicines</div>
+                    <div class="stat-value" th:text="${expiredCount}">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Low Stock</div>
+                    <div class="stat-value" th:text="${lowStockCount}">0</div>
                 </div>
             </div>
-
-            <div class="overview-grid">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-label">Total Medicines</div>
-                        <div class="stat-value" th:text="${medicines.size()}">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Expired Medicines</div>
-                        <div class="stat-value" th:text="${expiredCount}">0</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Low Stock</div>
-                        <div class="stat-value" th:text="${lowStockCount}">0</div>
-                    </div>
-                </div>
-                <div class="overview-actions">
+            <div class="overview-actions">
                     <span class="stat-card" style="padding: 20px 24px; min-width: 220px; display: block;">
                         <div class="stat-label" style="margin-bottom: 10px;">Active View</div>
                         <div class="stat-value" th:text="${viewType != null ? viewType : 'All Records'}">All Records</div>
                     </span>
-                </div>
             </div>
+        </div>
 
-            <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Manufacturer</th>
-                                <th>Price</th>
-                                <th>Stock</th>
-                                <th>Expiry</th>
-                                <th>Category</th>
-                                <th>Type</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="medicine : ${medicines}">
-                                <td th:text="${medicine.medicineId}"></td>
-                                <td th:text="${medicine.name}"></td>
-                                <td th:text="${medicine.manufacturer}"></td>
-                                <td th:text="${medicine.price}"></td>
-                                <td th:text="${medicine.stockQuantity}"></td>
-                                <td th:text="${medicine.expiryDate}"></td>
-                                <td th:text="${medicine.category}"></td>
-                                <td>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Manufacturer</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Expiry</th>
+                    <th>Category</th>
+                    <th>Type</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="medicine : ${medicines}">
+                    <td th:text="${medicine.medicineId}"></td>
+                    <td th:text="${medicine.name}"></td>
+                    <td th:text="${medicine.manufacturer}"></td>
+                    <td th:text="${medicine.price}"></td>
+                    <td th:text="${medicine.stockQuantity}"></td>
+                    <td th:text="${medicine.expiryDate}"></td>
+                    <td th:text="${medicine.category}"></td>
+                    <td>
                                     <span th:switch="${medicine.stockQuantity <= 5}">
                                         <span th:case="true" class="badge badge-low" th:text="${medicine.medicineType}"></span>
                                         <span th:case="false" class="badge badge-normal" th:text="${medicine.medicineType}"></span>
                                     </span>
-                                </td>
-                                <td>
-                                    <a th:href="@{/admin/medicine/update/{id}(id=${medicine.medicineId})}">Update</a>
-                                    <a th:href="@{/admin/medicine/delete/{id}(id=${medicine.medicineId})}" onclick="return confirm('Delete this medicine?')">Delete</a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div th:if="${medicines.empty}" class="empty-state">No medicines found. Add a new medicine to begin managing inventory.</div>
-                </div>
-            </div>
+                    </td>
+                    <td>
+                        <a th:href="@{/admin/medicine/update/{id}(id=${medicine.medicineId})}">Update</a>
+                        <a th:href="@{/admin/medicine/delete/{id}(id=${medicine.medicineId})}" onclick="return confirm('Delete this medicine?')">Delete</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div th:if="${medicines.empty}" class="empty-state">No medicines found. Add a new medicine to begin managing inventory.</div>
         </div>
-    </main>
+    </div>
+    </div>
+</main>
 </body>
 </html>
