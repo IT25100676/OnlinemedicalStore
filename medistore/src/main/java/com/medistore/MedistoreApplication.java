@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * Component 01: User Management
  *
  * Entry point for the Spring Boot application.
- */
+ **/
 
 @SpringBootApplication
 public class MedistoreApplication {
