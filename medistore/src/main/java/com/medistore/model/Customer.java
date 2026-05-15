@@ -46,6 +46,7 @@ public class Customer extends User {
 
     @Override
     public String getRole() {
+
         return "CUSTOMER";
     }
 
