@@ -36,6 +36,7 @@ public class DataInitializer implements CommandLineRunner {
         } catch (Exception e) {
             // Already exists, skip
         }
+
     }
 
 }
